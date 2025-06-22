@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Root123
+      - POSTGRES_DB=payroll
+      - JWT_SECRET_KEY=you-are-my-jujutsu-kaisen
+      - JWT_EXPIRATION_MINUTES=60
+    volumes:
+      - .:/app
+    restart: on-failure
+
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Root123
+      POSTGRES_DB: payroll
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

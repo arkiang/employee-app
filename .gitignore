@@ -1,0 +1,17 @@
+*.out
+/build/
+bin/
+
+go.work
+go.work.sum
+
+vendor/
+go.sum
+*.log
+.env
+.env.*
+
+.vscode/
+.DS_Store
+.dockerignore
+Dockerfile
