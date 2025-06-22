@@ -9,7 +9,7 @@ import (
 type PayslipAttendanceDTO struct {
 	Date         string    `json:"date"`         // YYYY-MM-DD
 	CheckInTime  time.Time `json:"checkInTime"`
-	CheckOutTime time.Time `json:"checkOutTime"`
+	CheckOutTime *time.Time `json:"checkOutTime"`
 }
 
 type PayslipOvertimeDTO struct {

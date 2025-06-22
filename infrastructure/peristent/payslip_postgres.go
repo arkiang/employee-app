@@ -18,8 +18,11 @@ func (r *payslipRepository) WithTransaction(ctx context.Context, fn func(tx *gor
 	return r.db.WithContext(ctx).Transaction(fn)
 }
 
-func (r *payslipRepository) CreatePayslipTx(ctx context.Context, tx *gorm.DB, payslip *entity.Payslip) error {
-	return tx.WithContext(ctx).Create(&payslip).Error
+func (r *payslipRepository) CreatePayslipTx(ctx context.Context, tx *gorm.DB, payslip *entity.Payslip) (*entity.Payslip, error) {
+	if err := tx.WithContext(ctx).Create(payslip).Error; err != nil {
+		return nil, err
+	}
+	return payslip, nil
 }
 
 func (r *payslipRepository) GetByEmployeesAndPeriod(ctx context.Context, filter model.EmployeePeriodFilter) ([]*entity.Payslip, error) {
@@ -55,7 +58,7 @@ func (r *payslipRepository) ListForPeriod(ctx context.Context, filter model.Empl
 	var payslips []*entity.Payslip
 
 	tx := r.db.WithContext(ctx).Model(&entity.Payslip{}).
-		Preload("Employee").
+		Preload("Employee.User").
 		Preload("Attendances").
 		Preload("Overtimes").
 		Preload("Reimbursements")

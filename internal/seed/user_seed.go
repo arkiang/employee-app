@@ -54,7 +54,7 @@ func SeedAdmin(ctx context.Context, userRepo repository.UserRepository) {
 	fmt.Println("Admin user seeded successfully.")
 }
 
-func SeedEmployeesFromCSV(ctx context.Context, regUC registration.RegistrationUsecase) {
+func SeedEmployeesFromCSV(ctx context.Context, userRepo repository.UserRepository, regUC registration.RegistrationUsecase) {
 	file, err := os.Open("internal/seed/user.csv")
 	if err != nil {
 		panic(fmt.Sprintf("Failed to open CSV: %v", err))
@@ -92,6 +92,12 @@ func SeedEmployeesFromCSV(ctx context.Context, regUC registration.RegistrationUs
 		employee := entity.Employee{
 			Name:   name,
 			Salary: salary,
+		}
+
+		userExist, _ := userRepo.GetByUsername(ctx, username);
+		if userExist != nil {
+			fmt.Printf("User %s already exists\n", username)
+			continue
 		}
 
 		if err := regUC.RegisterEmployee(ctx, user, employee, "12345"); err != nil {

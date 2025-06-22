@@ -36,6 +36,18 @@ func (r *employeeRepository) GetByID(ctx context.Context, id uint) (*entity.Empl
 	return &emp, nil
 }
 
+// GetByUserID implements repository.EmployeeRepository.
+func (r *employeeRepository) GetByUserID(ctx context.Context, userId uint) (*entity.Employee, error) {
+	var employee entity.Employee
+	if err := r.db.WithContext(ctx).
+		Preload("User").
+		Where("user_id = ?", userId).
+		First(&employee).Error; err != nil {
+		return nil, err
+	}
+	return &employee, nil
+}
+
 // List implements repository.EmployeeRepository.
 func (r *employeeRepository) List(ctx context.Context, filter common.CommonFilter) ([]*entity.Employee, error) {
 	var employees []*entity.Employee

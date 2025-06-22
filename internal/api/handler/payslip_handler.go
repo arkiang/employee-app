@@ -59,22 +59,13 @@ func (h *PayslipHandler) GetPayslipForMe(c *gin.Context) {
 		return
 	}
 
-	empIDStr := c.Param("empId")
-	empIDInt, err := strconv.Atoi(empIDStr)
-	if err != nil || empIDInt <= 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid empId path parameter"})
-		return
-	}
-	empID := uint(empIDInt)
-
-	payslip, err := h.payslipUC.GetPayslipForEmployee(c, empID, uint(periodID))
+	payslip, err := h.payslipUC.GetPayslipForEmployee(c, uint(periodID))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "payslip not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "payslip not found" + err.Error()})
 		return
 	}
 
-	resp := toPayslipResponse(payslip)
-	c.JSON(http.StatusOK, resp)
+	c.JSON(http.StatusOK, payslip)
 }
 
 func (h *PayslipHandler) GetPayslipSummary(c *gin.Context) {
@@ -130,10 +121,13 @@ func (h *PayslipHandler) GetPayslipSummary(c *gin.Context) {
 func toPayslipResponse(p *entity.Payslip) dto.PayslipResponse {
 	attendances := make([]dto.PayslipAttendanceDTO, 0)
 	for _, a := range p.Attendances {
+		if a.CheckOut == nil {
+			continue // atau log.Println("nil attendance entry")
+		}
 		attendances = append(attendances, dto.PayslipAttendanceDTO{
 			Date:         a.Date.Format("2006-01-02"),
 			CheckInTime:  a.CheckIn,
-			CheckOutTime: *a.CheckOut,
+			CheckOutTime: a.CheckOut,
 		})
 	}
 

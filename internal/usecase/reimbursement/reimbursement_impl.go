@@ -3,7 +3,7 @@ package reimbursement
 import (
 	"context"
 	"employee-app/internal/api/dto/common"
-	"employee-app/internal/common/constant"
+	"employee-app/internal/api/middleware"
 	"employee-app/internal/model"
 	"employee-app/internal/model/entity"
 	"employee-app/internal/repository"
@@ -25,7 +25,7 @@ func New(reimbursementRepo repository.ReimbursementRepository) ReimbursementUsec
 }
 
 func (u *reimbursementUsecase) SubmitReimbursement(ctx context.Context, empID uint, date common.DateOnly, amount decimal.Decimal, description *string) error {
-	val := ctx.Value(constant.UserId)
+	val := ctx.Value(middleware.ContextUserIDKey)
 	userID, ok := val.(uint)
 	if !ok {
 		return errors.New("unauthorized or missing user ID")

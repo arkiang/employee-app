@@ -8,6 +8,6 @@ import (
 
 type PayslipUsecase interface {
 	RunPayroll(ctx context.Context, periodID uint) error
-	GetPayslipForEmployee(ctx context.Context, empID uint, periodID uint) (*entity.Payslip, error)
+	GetPayslipForEmployee(ctx context.Context, periodID uint) (*entity.Payslip, error)
 	GetPayslipSummary(ctx context.Context, periodID uint, filter common.CommonFilter) ([]*entity.Payslip, error)
 }

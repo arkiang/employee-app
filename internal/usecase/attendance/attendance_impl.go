@@ -2,7 +2,7 @@ package attendance
 
 import (
 	"context"
-	"employee-app/internal/common/constant"
+	"employee-app/internal/api/middleware"
 	common "employee-app/internal/common/model"
 	"employee-app/internal/model"
 	"employee-app/internal/model/entity"
@@ -31,7 +31,7 @@ func (u *attendanceUsecase) GetAttendanceForPeriod(ctx context.Context, spec mod
 }
 
 func (u *attendanceUsecase) SubmitAttendance(ctx context.Context, empID uint, t int64, attendanceType model.AttendanceType) error {
-	val := ctx.Value(constant.UserId)
+	val := ctx.Value(middleware.ContextUserIDKey)
 	userID, ok := val.(uint)
 	if !ok {
 		return errors.New("unauthorized or missing user ID")

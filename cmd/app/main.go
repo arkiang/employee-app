@@ -53,7 +53,7 @@ func main() {
 	payslipUsecase := payslip.New(employeeRepo, attendanceRepo, overtimeRepo, reimbursementRepo, periodRepo, payslipRepo)
 
 	seed.SeedAdmin(context.Background(), userRepo)
-	seed.SeedEmployeesFromCSV(context.Background(), registrationUsecase)
+	seed.SeedEmployeesFromCSV(context.Background(), userRepo, registrationUsecase)
 
 	// Handler layer
 	userHandler := handler.NewUserHandler(userUsecase)

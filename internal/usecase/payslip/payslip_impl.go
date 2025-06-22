@@ -2,7 +2,7 @@ package payslip
 
 import (
 	"context"
-	"employee-app/internal/common/constant"
+	"employee-app/internal/api/middleware"
 	common "employee-app/internal/common/model"
 	"employee-app/internal/model"
 	"employee-app/internal/model/entity"
@@ -43,7 +43,7 @@ func New(
 }
 
 func (u *payrollUsecase) RunPayroll(ctx context.Context, periodID uint) error {
-	val := ctx.Value(constant.UserId)
+	val := ctx.Value(middleware.ContextUserIDKey)
 	adminID, ok := val.(uint)
 	if !ok {
 		return errors.New("unauthorized or missing user ID")
@@ -99,7 +99,7 @@ func (u *payrollUsecase) RunPayroll(ctx context.Context, periodID uint) error {
 		total := attendanceTotal.Add(overtimeTotal).Add(reimburseTotal)
 
 		// Prepare records
-		payslip := entity.Payslip{
+		payslipEnt := entity.Payslip{
 			EmployeeID:      emp.ID,
 			PeriodStart:     period.StartDate,
 			PeriodEnd:       period.EndDate,
@@ -114,40 +114,42 @@ func (u *payrollUsecase) RunPayroll(ctx context.Context, periodID uint) error {
 			UpdatedBy:       adminID,
 		}
 
-		var payslipAttendances []entity.PayslipAttendance
-		for _, a := range attendances {
-			payslipAttendances = append(payslipAttendances, entity.PayslipAttendance{
-				PayslipID:  payslip.ID,
-				Date: 		a.AttendanceDate,
-				CheckIn: 	a.CheckInTime,
-				CheckOut: 	a.CheckOutTime,
-			})
-		}
-
-		var payslipOvertimes []entity.PayslipOvertime
-		for _, o := range overtimes {
-			payslipOvertimes = append(payslipOvertimes, entity.PayslipOvertime{
-				PayslipID:  payslip.ID,
-				Date: 		o.OvertimeDate,
-				Hours: 		o.Hours,
-			})
-		}
-
-		var payslipReimbursements []entity.PayslipReimbursement
-		for _, r := range reimbursements {
-			payslipReimbursements = append(payslipReimbursements, entity.PayslipReimbursement{
-				PayslipID:  	payslip.ID,
-				Date: 			r.ReimbursementDate,
-				Amount:			r.Amount,
-				Description:    r.Description,
-			})
-		}
-
 		// ⚙️ Wrap all ops per employee in a DB transaction
 		err := u.payslipRepo.WithTransaction(ctx, func(tx *gorm.DB) error {
-			if err := u.payslipRepo.CreatePayslipTx(ctx, tx, &payslip); err != nil {
+			payslip, err := u.payslipRepo.CreatePayslipTx(ctx, tx, &payslipEnt);
+			if err != nil {
 				return err
 			}
+
+			var payslipAttendances []entity.PayslipAttendance
+			for _, a := range attendances {
+				payslipAttendances = append(payslipAttendances, entity.PayslipAttendance{
+					PayslipID:  payslip.ID,
+					Date: 		a.AttendanceDate,
+					CheckIn: 	a.CheckInTime,
+					CheckOut: 	a.CheckOutTime,
+				})
+			}
+
+			var payslipOvertimes []entity.PayslipOvertime
+			for _, o := range overtimes {
+				payslipOvertimes = append(payslipOvertimes, entity.PayslipOvertime{
+					PayslipID:  payslip.ID,
+					Date: 		o.OvertimeDate,
+					Hours: 		o.Hours,
+				})
+			}
+
+			var payslipReimbursements []entity.PayslipReimbursement
+			for _, r := range reimbursements {
+				payslipReimbursements = append(payslipReimbursements, entity.PayslipReimbursement{
+					PayslipID:  	payslip.ID,
+					Date: 			r.ReimbursementDate,
+					Amount:			r.Amount,
+					Description:    r.Description,
+				})
+			}
+			
 			if len(payslipAttendances) > 0 {
 				if err := u.payslipRepo.BulkInsertAttendancesTx(ctx, tx, payslipAttendances); err != nil {
 					return err
@@ -173,9 +175,20 @@ func (u *payrollUsecase) RunPayroll(ctx context.Context, periodID uint) error {
 	return nil
 }
 
-func (u *payrollUsecase) GetPayslipForEmployee(ctx context.Context, empID uint, periodID uint) (*entity.Payslip, error) {
+func (u *payrollUsecase) GetPayslipForEmployee(ctx context.Context, periodID uint) (*entity.Payslip, error) {
+	val := ctx.Value(middleware.ContextUserIDKey)
+	userID, ok := val.(uint)
+	if !ok {
+		return nil, errors.New("unauthorized or missing user ID")
+	}
+
+	employee, err := u.employeeRepo.GetByUserID(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get employee with userID %d: %w", userID, err)
+	}
+
 	filter := model.EmployeePeriodFilter{
-		EmpIds: &[]string{fmt.Sprint(empID)},
+		EmpIds: &[]string{fmt.Sprint(employee.ID)},
 	}
 	period, err := u.payrollPeriodRepo.GetByID(ctx, periodID)
 	if err != nil {

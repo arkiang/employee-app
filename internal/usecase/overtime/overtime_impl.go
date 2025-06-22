@@ -3,7 +3,7 @@ package overtime
 import (
 	"context"
 	"employee-app/internal/api/dto/common"
-	"employee-app/internal/common/constant"
+	"employee-app/internal/api/middleware"
 	"employee-app/internal/model"
 	"employee-app/internal/model/entity"
 	"employee-app/internal/repository"
@@ -26,7 +26,7 @@ func New(overtimeRepo repository.OvertimeRepository, attendanceRepo repository.A
 }
 
 func (u *overtimeUsecase) SubmitOvertime(ctx context.Context, empID uint, date common.DateOnly, hours uint8) error {
-	val := ctx.Value(constant.UserId)
+	val := ctx.Value(middleware.ContextUserIDKey)
 	userID, ok := val.(uint)
 	if !ok {
 		return errors.New("unauthorized or missing user ID")
