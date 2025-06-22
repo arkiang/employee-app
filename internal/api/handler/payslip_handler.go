@@ -37,7 +37,7 @@ func (h *PayslipHandler) RunPayroll(c *gin.Context) {
 		return
 	}
 
-	if err := h.payslipUC.RunPayroll(c.Request.Context(), uint(periodID)); err != nil {
+	if err := h.payslipUC.RunPayroll(c, uint(periodID)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -67,7 +67,7 @@ func (h *PayslipHandler) GetPayslipForMe(c *gin.Context) {
 	}
 	empID := uint(empIDInt)
 
-	payslip, err := h.payslipUC.GetPayslipForEmployee(c.Request.Context(), empID, uint(periodID))
+	payslip, err := h.payslipUC.GetPayslipForEmployee(c, empID, uint(periodID))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "payslip not found"})
 		return
@@ -103,7 +103,7 @@ func (h *PayslipHandler) GetPayslipSummary(c *gin.Context) {
 		Page:      query.Page,
 	}
 
-	payslips, err := h.payslipUC.GetPayslipSummary(c.Request.Context(), uint(periodID), filter)
+	payslips, err := h.payslipUC.GetPayslipSummary(c, uint(periodID), filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

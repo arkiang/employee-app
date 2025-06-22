@@ -11,7 +11,7 @@ import (
 type PayslipRepository interface {
 	WithTransaction(ctx context.Context, fn func(tx *gorm.DB) error) error
 
-	CreatePayslipTx(ctx context.Context, tx *gorm.DB, payslip entity.Payslip) error
+	CreatePayslipTx(ctx context.Context, tx *gorm.DB, payslip *entity.Payslip) error
 	GetByEmployeesAndPeriod(ctx context.Context, filter model.EmployeePeriodFilter) ([]*entity.Payslip, error)
 	ListForPeriod(ctx context.Context, filter model.EmployeePeriodFilter) ([]*entity.Payslip, error)
 

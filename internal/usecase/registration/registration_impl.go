@@ -42,13 +42,13 @@ func (u *registrationUsecase) RegisterEmployee(ctx context.Context, user entity.
 	err = u.userRepo.WithTransaction(ctx, func(tx *gorm.DB) error {
 		user.PasswordHash = hashedPassword
 		user.Salt = salt
-		userResp, err := u.userRepo.CreateTx(ctx, tx, user)
+		userResp, err := u.userRepo.CreateTx(ctx, tx, &user)
 		if err != nil {
 			return err
 		}
 		
 		employee.UserID = userResp.ID
-		if err := u.employeeRepo.CreateTx(ctx, tx, employee); err != nil {
+		if err := u.employeeRepo.CreateTx(ctx, tx, &employee); err != nil {
 			return err
 		}
 		return nil

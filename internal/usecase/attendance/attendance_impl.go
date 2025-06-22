@@ -2,6 +2,7 @@ package attendance
 
 import (
 	"context"
+	"employee-app/internal/common/constant"
 	common "employee-app/internal/common/model"
 	"employee-app/internal/model"
 	"employee-app/internal/model/entity"
@@ -29,8 +30,8 @@ func (u *attendanceUsecase) GetAttendanceForPeriod(ctx context.Context, spec mod
 	return attendances, nil
 }
 
-func (u *attendanceUsecase) SubmitAttendance(ctx context.Context, empID uint, t time.Time, attendanceType model.AttendanceType) error {
-	val := ctx.Value("userID")
+func (u *attendanceUsecase) SubmitAttendance(ctx context.Context, empID uint, t int64, attendanceType model.AttendanceType) error {
+	val := ctx.Value(constant.UserId)
 	userID, ok := val.(uint)
 	if !ok {
 		return errors.New("unauthorized or missing user ID")
@@ -43,13 +44,18 @@ func (u *attendanceUsecase) SubmitAttendance(ctx context.Context, empID uint, t 
 	}
 
 	// Convert time to Asia/Jakarta
-	tLocal := t.In(loc)
-	attendanceDate := tLocal.Truncate(24 * time.Hour)
+	tLocal := time.Unix(t, 0).In(loc)
+	// Truncate to start of day (local time)
+	attendanceDate := time.Date(
+		tLocal.Year(), tLocal.Month(), tLocal.Day(),
+		0, 0, 0, 0,
+		loc,
+	)
 
 	// Reject weekends
 	weekday := attendanceDate.Weekday()
 	if weekday == time.Saturday || weekday == time.Sunday {
-		return errors.New("cannot submit attendance on weekends")
+		return errors.New("cannot submit attendance on weekends ")
 	}
 
 	// Check for duplicates (same day & type)
@@ -82,7 +88,7 @@ func (u *attendanceUsecase) SubmitAttendance(ctx context.Context, empID uint, t 
 		} 
 		existing.UpdatedBy = userID
 
-		_, err = u.attendanceRepo.Update(ctx, *existing)
+		_, err = u.attendanceRepo.Update(ctx, existing)
 		return err
 	}
 
@@ -99,6 +105,6 @@ func (u *attendanceUsecase) SubmitAttendance(ctx context.Context, empID uint, t 
 		CreatedBy:      userID,
 		UpdatedBy:      userID,
 	}
-	_, err = u.attendanceRepo.Create(ctx, newAttendance)
+	_, err = u.attendanceRepo.Create(ctx, &newAttendance)
 	return err
 }

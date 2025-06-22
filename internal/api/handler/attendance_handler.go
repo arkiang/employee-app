@@ -44,7 +44,7 @@ func (h *AttendanceHandler) SubmitAttendance(c *gin.Context) {
 		return
 	}
 
-	err = h.usecase.SubmitAttendance(c.Request.Context(), empID, req.Time, req.AttendanceType)
+	err = h.usecase.SubmitAttendance(c, empID, req.Time, req.AttendanceType)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -80,7 +80,7 @@ func (h *AttendanceHandler) GetAttendanceForPeriod(c *gin.Context) {
 		},
 	}
 
-	attendances, err := h.usecase.GetAttendanceForPeriod(c.Request.Context(), filter)
+	attendances, err := h.usecase.GetAttendanceForPeriod(c, filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve attendance"})
 		return

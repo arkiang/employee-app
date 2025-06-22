@@ -2,12 +2,11 @@ package attendance
 
 import (
 	"context"
-	"time"
-	"employee-app/internal/model/entity"
 	"employee-app/internal/model"
+	"employee-app/internal/model/entity"
 )
 
 type AttendanceUsecase interface {
-	SubmitAttendance(ctx context.Context, empID uint, time time.Time, attendanceType model.AttendanceType) error
+	SubmitAttendance(ctx context.Context, empID uint, time int64, attendanceType model.AttendanceType) error
 	GetAttendanceForPeriod(ctx context.Context, spec model.EmployeePeriodFilter) ([]*entity.Attendance, error)
 }

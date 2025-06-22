@@ -10,6 +10,7 @@ import (
 	"employee-app/internal/common/constant"
 
 	"github.com/gin-gonic/gin"
+	"github.com/shopspring/decimal"
 )
 
 type RegistrationHandler struct {
@@ -41,12 +42,17 @@ func (h *RegistrationHandler) Register(c *gin.Context) {
 		Role:     "employee",
 	}
 
+	salary, err := decimal.NewFromString(req.Salary)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid amount"})
+		return
+	}
 	employee := entity.Employee{
 		Name:   req.Name,
-		Salary: req.Salary,
+		Salary: salary,
 	}
 
-	if err := h.usecase.RegisterEmployee(c.Request.Context(), user, employee, req.Password); err != nil {
+	if err := h.usecase.RegisterEmployee(c, user, employee, req.Password); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

@@ -23,11 +23,11 @@ func NewOvertime(db *gorm.DB) repository.OvertimeRepository {
 }
 
 // Create implements repository.OvertimeRepository.
-func (r *overtimeRepository) Create(ctx context.Context, spec entity.Overtime) (*entity.Overtime, error) {
+func (r *overtimeRepository) Create(ctx context.Context, spec *entity.Overtime) (*entity.Overtime, error) {
 	if err := r.db.WithContext(ctx).Create(&spec).Error; err != nil {
 		return nil, err
 	}
-	return &spec, nil
+	return spec, nil
 }
 
 // GetByID implements repository.OvertimeRepository.
@@ -51,10 +51,10 @@ func (r *overtimeRepository) List(ctx context.Context, filter model.EmployeePeri
 
 	// Filter by period (Start and/or End)
 	if filter.Start != nil {
-		tx = tx.Where("attendance_date >= ?", filter.Start)
+		tx = tx.Where("overtime_date >= ?", filter.Start)
 	}
 	if filter.End != nil {
-		tx = tx.Where("attendance_date <= ?", filter.End)
+		tx = tx.Where("overtime_date <= ?", filter.End)
 	}
 	
 	tx = tx.Order(fmt.Sprintf("%s %s", filter.Base.GetSortByOrDefault("created_at"), filter.Base.GetSortBySQL()))

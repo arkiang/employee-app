@@ -2,6 +2,8 @@ package overtime
 
 import (
 	"context"
+	"employee-app/internal/api/dto/common"
+	"employee-app/internal/common/constant"
 	"employee-app/internal/model"
 	"employee-app/internal/model/entity"
 	"employee-app/internal/repository"
@@ -23,8 +25,8 @@ func New(overtimeRepo repository.OvertimeRepository, attendanceRepo repository.A
 	}
 }
 
-func (u *overtimeUsecase) SubmitOvertime(ctx context.Context, empID uint, date time.Time, hours uint8) error {
-	val := ctx.Value("userID")
+func (u *overtimeUsecase) SubmitOvertime(ctx context.Context, empID uint, date common.DateOnly, hours uint8) error {
+	val := ctx.Value(constant.UserId)
 	userID, ok := val.(uint)
 	if !ok {
 		return errors.New("unauthorized or missing user ID")
@@ -38,8 +40,13 @@ func (u *overtimeUsecase) SubmitOvertime(ctx context.Context, empID uint, date t
 	if err != nil {
 		return fmt.Errorf("failed to load timezone: %w", err)
 	}
+	
 	tLocal := date.In(loc)
-	overtimeDate := tLocal.Truncate(24 * time.Hour)
+	overtimeDate := time.Date(
+		tLocal.Year(), tLocal.Month(), tLocal.Day(),
+		0, 0, 0, 0,
+		loc,
+	)
 
 	// Reject weekends
 	weekday := overtimeDate.Weekday()
@@ -80,7 +87,7 @@ func (u *overtimeUsecase) SubmitOvertime(ctx context.Context, empID uint, date t
 		UpdatedBy:    userID,
 	}
 
-	_, err = u.overtimeRepo.Create(ctx, overtime)
+	_, err = u.overtimeRepo.Create(ctx, &overtime)
 	return err
 }
 

@@ -24,7 +24,7 @@ func NewPayrollPeriodHandler(payrollUC payroll.PayrollPeriodUsecase) *PayrollPer
 
 // POST /payroll-periods/{adminID}
 func (h *PayrollPeriodHandler) CreatePeriod(c *gin.Context) {
-	_, status, errMsg := utils.GetUserID(c, constant.EnumRoleAdmin)
+	adminID, status, errMsg := utils.GetUserID(c, constant.EnumRoleAdmin)
 	if status != http.StatusOK {
 		c.JSON(status, gin.H{"error": errMsg})
 		return
@@ -35,22 +35,13 @@ func (h *PayrollPeriodHandler) CreatePeriod(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	adminIDStr := c.Param("adminId")
-	adminIDInt, err := strconv.Atoi(adminIDStr)
-	if err != nil || adminIDInt <= 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid adminId path parameter"})
-		return
-	}
-	adminID := uint(adminIDInt)
-
-	err = h.payrollUC.CreatePeriod(c.Request.Context(), req.StartDate, req.EndDate, adminID)
+	err := h.payrollUC.CreatePeriod(c, req.StartDate, req.EndDate, adminID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.Status(http.StatusCreated)
+	c.JSON(http.StatusOK, gin.H{"message": "payroll period submitted successfully"})
 }
 
 // GET /payroll-periods
@@ -74,7 +65,7 @@ func (h *PayrollPeriodHandler) ListPeriods(c *gin.Context) {
 		Page:      query.Page,
 	}
 
-	periods, err := h.payrollUC.ListPeriod(c.Request.Context(), filter)
+	periods, err := h.payrollUC.ListPeriod(c, filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -110,7 +101,7 @@ func (h *PayrollPeriodHandler) GetPeriodByID(c *gin.Context) {
 		return
 	}
 
-	period, err := h.payrollUC.GetPeriodByID(c.Request.Context(), uint(id))
+	period, err := h.payrollUC.GetPeriodByID(c, uint(id))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "payroll period not found"})
 		return

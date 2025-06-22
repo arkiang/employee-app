@@ -23,14 +23,14 @@ func NewEmployee(db *gorm.DB) repository.EmployeeRepository {
 }
 
 // Create implements repository.EmployeeRepository.
-func (r *employeeRepository) CreateTx(ctx context.Context, tx *gorm.DB, spec entity.Employee) error {
+func (r *employeeRepository) CreateTx(ctx context.Context, tx *gorm.DB, spec *entity.Employee) error {
 	return tx.WithContext(ctx).Create(spec).Error
 }
 
 // GetByID implements repository.EmployeeRepository.
 func (r *employeeRepository) GetByID(ctx context.Context, id uint) (*entity.Employee, error) {
 	var emp entity.Employee
-	if err := r.db.WithContext(ctx).First(&emp, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).Preload("User").First(&emp, id).Error; err != nil {
 		return nil, err
 	}
 	return &emp, nil
@@ -41,6 +41,7 @@ func (r *employeeRepository) List(ctx context.Context, filter common.CommonFilte
 	var employees []*entity.Employee
 
 	tx := r.db.WithContext(ctx).Model(&entity.Employee{}).
+		Preload("User").
 		Order(fmt.Sprintf("%s %s", filter.GetSortByOrDefault("created_at"), filter.GetSortBySQL()))
 
 	if filter.Limit != nil {
@@ -55,9 +56,25 @@ func (r *employeeRepository) List(ctx context.Context, filter common.CommonFilte
 }
 
 // Update implements repository.EmployeeRepository.
-func (r *employeeRepository) Update(ctx context.Context, spec entity.Employee) (*entity.Employee, error) {
-	if err := r.db.WithContext(ctx).Save(spec).Error; err != nil {
+func (r *employeeRepository) Update(ctx context.Context, spec *entity.Employee) (*entity.Employee, error) {
+	err := r.db.WithContext(ctx).
+		Model(&entity.Employee{}).
+		Where("id = ?", spec.ID).
+		Updates(map[string]interface{}{
+			"name":   spec.Name,
+			"salary": spec.Salary,
+		}).Error
+
+	if err != nil {
 		return nil, err
 	}
-	return &spec, nil
+
+	var updated entity.Employee
+	if err := r.db.WithContext(ctx).
+		Preload("User").
+		First(&updated, spec.ID).Error; err != nil {
+		return nil, err
+	}
+
+	return &updated, nil
 }

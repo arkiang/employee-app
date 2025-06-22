@@ -1,11 +1,12 @@
 package dto
 
-import "employee-app/internal/model"
-
-import "time"
+import (
+	"employee-app/internal/model"
+	"time"
+)
 
 type SubmitAttendanceRequest struct {
-	Time           time.Time            `json:"time" binding:"required"`                       // Timestamp of submission
+	Time           int64            `json:"time" binding:"required"`                       // Timestamp of submission
 	AttendanceType model.AttendanceType `json:"attendanceType" binding:"required,oneof=Check-In Check-Out"` // Enum (Check-In / Check-Out)
 }
 

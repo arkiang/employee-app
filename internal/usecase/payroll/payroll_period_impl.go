@@ -2,6 +2,7 @@ package payroll
 
 import (
 	"context"
+	commonDate "employee-app/internal/api/dto/common"
 	common "employee-app/internal/common/model"
 	"employee-app/internal/model/entity"
 	"employee-app/internal/repository"
@@ -22,8 +23,8 @@ func New(repo repository.PayrollPeriodRepository) PayrollPeriodUsecase {
 }
 
 // CreatePeriod ensures no overlapping payroll period exists and creates a new one
-func (u *payrollPeriodUsecase) CreatePeriod(ctx context.Context, startDate, endDate time.Time, adminID uint) error {
-	if endDate.Before(startDate) {
+func (u *payrollPeriodUsecase) CreatePeriod(ctx context.Context, startDate, endDate commonDate.DateOnly, adminID uint) error {
+	if endDate.Before(startDate.Time) {
 		return errors.New("end date cannot be before start date")
 	}
 
@@ -39,14 +40,33 @@ func (u *payrollPeriodUsecase) CreatePeriod(ctx context.Context, startDate, endD
 		}
 	}
 
+	loc, err := time.LoadLocation("Asia/Jakarta")
+	if err != nil {
+		return fmt.Errorf("failed to load timezone: %w", err)
+	}
+	
+	tStartLocal := startDate.In(loc)
+	start := time.Date(
+		tStartLocal.Year(), tStartLocal.Month(), tStartLocal.Day(),
+		0, 0, 0, 0,
+		loc,
+	)
+
+	tEndLocal := endDate.In(loc)
+	end := time.Date(
+		tEndLocal.Year(), tEndLocal.Month(), tEndLocal.Day(),
+		0, 0, 0, 0,
+		loc,
+	)
+
 	period := entity.PayrollPeriod{
-		StartDate: startDate,
-		EndDate:   endDate,
+		StartDate: start,
+		EndDate:   end,
 		CreatedBy: adminID,
 		UpdatedBy: adminID,
 	}
 
-	_, err = u.payrollRepo.Create(ctx, period)
+	_, err = u.payrollRepo.Create(ctx, &period)
 	return err
 }
 

@@ -28,11 +28,11 @@ func (r *userRepository) WithTransaction(ctx context.Context, fn func(tx *gorm.D
 	return r.db.WithContext(ctx).Transaction(fn)
 }
 
-func (r *userRepository) CreateTx(ctx context.Context, tx *gorm.DB, user entity.User) (*entity.User, error) {
+func (r *userRepository) CreateTx(ctx context.Context, tx *gorm.DB, user *entity.User) (*entity.User, error) {
 	if err := tx.WithContext(ctx).Create(user).Error; err != nil {
 		return nil, err
 	}
-	return &user, nil
+	return user, nil
 }
 
 func (r *userRepository) GetByID(ctx context.Context, id uint) (*entity.User, error) {

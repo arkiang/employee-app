@@ -8,18 +8,17 @@ import (
 
 type UserLoginRequest struct {
     Username string `json:"username" binding:"required"`
-    Password string `json:"password" binding:"required,min=8,max=128"`
+    Password string `json:"password" binding:"required,min=3,max=128"`
 }
 
 type RegisterEmployeeRequest struct {
 	// User fields
 	Username string `json:"username" binding:"required,min=3,max=50"`
 	Password string `json:"password" binding:"required,min=6"`
-	Role     string `json:"role" binding:"required,oneof=employee"` // Only employee allowed
 
 	// Employee fields
-	Name   string          `json:"name" binding:"required,min=3,max=100"`
-	Salary decimal.Decimal `json:"salary" binding:"required,gt=0"`
+	Name   string   `json:"name" binding:"required,min=3,max=100"`
+	Salary string   `json:"salary" binding:"required,gt=0"`
 }
 
 type RegisterEmployeeResponse struct {
@@ -35,7 +34,6 @@ type RegisterEmployeeResponse struct {
 type UpdateEmployeeRequest struct {
 	Name   string          `json:"name,omitempty"`
 	Salary decimal.Decimal `json:"salary,omitempty"`
-	Role   string          `json:"role,omitempty"`
 }
 
 type ListEmployeeRequest struct {

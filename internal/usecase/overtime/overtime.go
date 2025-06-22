@@ -2,12 +2,12 @@ package overtime
 
 import (
 	"context"
-	"time"
-	"employee-app/internal/model/entity"
+	"employee-app/internal/api/dto/common"
 	"employee-app/internal/model"
+	"employee-app/internal/model/entity"
 )
 
 type OvertimeUsecase interface {
-	SubmitOvertime(ctx context.Context, empID uint, date time.Time, hours uint8) error
+	SubmitOvertime(ctx context.Context, empID uint, date common.DateOnly, hours uint8) error
 	GetOvertimeForPeriod(ctx context.Context, spec model.EmployeePeriodFilter) ([]*entity.Overtime, error)
 }

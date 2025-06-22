@@ -2,6 +2,8 @@ package reimbursement
 
 import (
 	"context"
+	"employee-app/internal/api/dto/common"
+	"employee-app/internal/common/constant"
 	"employee-app/internal/model"
 	"employee-app/internal/model/entity"
 	"employee-app/internal/repository"
@@ -22,11 +24,11 @@ func New(reimbursementRepo repository.ReimbursementRepository) ReimbursementUsec
 	}
 }
 
-func (u *reimbursementUsecase) SubmitReimbursement(ctx context.Context, empID uint, date time.Time, amount decimal.Decimal, description *string) error {
-	val := ctx.Value("userID")
+func (u *reimbursementUsecase) SubmitReimbursement(ctx context.Context, empID uint, date common.DateOnly, amount decimal.Decimal, description *string) error {
+	val := ctx.Value(constant.UserId)
 	userID, ok := val.(uint)
 	if !ok {
-		return errors.New("unauthorized: user ID not found in context")
+		return errors.New("unauthorized or missing user ID")
 	}
 
 	if amount.LessThanOrEqual(decimal.Zero) {
@@ -38,7 +40,11 @@ func (u *reimbursementUsecase) SubmitReimbursement(ctx context.Context, empID ui
 		return fmt.Errorf("failed to load timezone: %w", err)
 	}
 	tLocal := date.In(loc)
-	reimbursementDate := tLocal.Truncate(24 * time.Hour)
+	reimbursementDate := time.Date(
+		tLocal.Year(), tLocal.Month(), tLocal.Day(),
+		0, 0, 0, 0,
+		loc,
+	)
 
 	r := entity.Reimbursement{
 		EmployeeID:   empID,
@@ -49,7 +55,7 @@ func (u *reimbursementUsecase) SubmitReimbursement(ctx context.Context, empID ui
 		UpdatedBy:    userID,
 	}
 
-	_, err = u.reimbursementRepo.Create(ctx, r)
+	_, err = u.reimbursementRepo.Create(ctx, &r)
 	return err
 }
 

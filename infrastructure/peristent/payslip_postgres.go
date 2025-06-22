@@ -18,14 +18,18 @@ func (r *payslipRepository) WithTransaction(ctx context.Context, fn func(tx *gor
 	return r.db.WithContext(ctx).Transaction(fn)
 }
 
-func (r *payslipRepository) CreatePayslipTx(ctx context.Context, tx *gorm.DB, payslip entity.Payslip) error {
+func (r *payslipRepository) CreatePayslipTx(ctx context.Context, tx *gorm.DB, payslip *entity.Payslip) error {
 	return tx.WithContext(ctx).Create(&payslip).Error
 }
 
 func (r *payslipRepository) GetByEmployeesAndPeriod(ctx context.Context, filter model.EmployeePeriodFilter) ([]*entity.Payslip, error) {
 	var payslips []*entity.Payslip
 
-	tx := r.db.WithContext(ctx).Model(&entity.Payslip{})
+	tx := r.db.WithContext(ctx).Model(&entity.Payslip{}).
+		Preload("Employee").
+		Preload("Attendances").
+		Preload("Overtimes").
+		Preload("Reimbursements")
 
 	if filter.EmpIds != nil && len(*filter.EmpIds) > 0 {
 		tx = tx.Where("employee_id IN ?", *filter.EmpIds)
@@ -50,7 +54,11 @@ func (r *payslipRepository) GetByEmployeesAndPeriod(ctx context.Context, filter 
 func (r *payslipRepository) ListForPeriod(ctx context.Context, filter model.EmployeePeriodFilter) ([]*entity.Payslip, error) {
 	var payslips []*entity.Payslip
 
-	tx := r.db.WithContext(ctx).Model(&entity.Payslip{})
+	tx := r.db.WithContext(ctx).Model(&entity.Payslip{}).
+		Preload("Employee").
+		Preload("Attendances").
+		Preload("Overtimes").
+		Preload("Reimbursements")
 
 	if filter.EmpIds != nil && len(*filter.EmpIds) > 0 {
 		tx = tx.Where("employee_id IN ?", *filter.EmpIds)

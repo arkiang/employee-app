@@ -27,7 +27,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	user, err := h.usecase.Login(c.Request.Context(), req.Username, req.Password)
+	user, err := h.usecase.Login(c, req.Username, req.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
@@ -56,7 +56,7 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 		return
 	}
 
-	user, err := h.usecase.GetByID(c.Request.Context(), uint(id))
+	user, err := h.usecase.GetByID(c, uint(id))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return

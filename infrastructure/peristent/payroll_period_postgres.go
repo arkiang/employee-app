@@ -15,11 +15,11 @@ type payrollPeriodRepository struct {
 }
 
 // Create implements repository.PayrollPeriodRepository.
-func (r *payrollPeriodRepository) Create(ctx context.Context, spec entity.PayrollPeriod) (*entity.PayrollPeriod, error) {
+func (r *payrollPeriodRepository) Create(ctx context.Context, spec *entity.PayrollPeriod) (*entity.PayrollPeriod, error) {
 	if err := r.db.WithContext(ctx).Create(&spec).Error; err != nil {
 		return nil, err
 	}
-	return &spec, nil
+	return spec, nil
 }
 
 // GetByID implements repository.PayrollPeriodRepository.
@@ -35,7 +35,7 @@ func (r *payrollPeriodRepository) GetByID(ctx context.Context, id uint) (*entity
 func (r *payrollPeriodRepository) List(ctx context.Context, filter common.CommonFilter) ([]*entity.PayrollPeriod, error) {
 	var payrollPeriods []*entity.PayrollPeriod
 
-	tx := r.db.WithContext(ctx).Model(&entity.Reimbursement{}).
+	tx := r.db.WithContext(ctx).Model(&entity.PayrollPeriod{}).
 		Order(fmt.Sprintf("%s %s", filter.GetSortByOrDefault("created_at"), filter.GetSortBySQL()))
 
 	if filter.Limit != nil {

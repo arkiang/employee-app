@@ -18,7 +18,7 @@ func New(employeeRepo repository.EmployeeRepository) EmployeeUsecase {
 }
 
 func (uc *employeeUsecase) UpdateEmployee(ctx context.Context, employee entity.Employee) (*entity.Employee, error) {
-	updatedEmployee, err := uc.employeeRepo.Update(ctx, employee)
+	updatedEmployee, err := uc.employeeRepo.Update(ctx, &employee)
 	if err != nil {
 		return nil, err
 	}

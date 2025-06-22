@@ -1,10 +1,13 @@
 package dto
 
-import "time"
+import (
+	"employee-app/internal/api/dto/common"
+	"time"
+)
 
 type CreatePayrollPeriodRequest struct {
-	StartDate time.Time `json:"startDate" binding:"required"` // Start of payroll period
-	EndDate   time.Time `json:"endDate" binding:"required"`   // End of payroll period
+	StartDate common.DateOnly `json:"startDate" binding:"required"` // Start of payroll period
+	EndDate   common.DateOnly `json:"endDate" binding:"required"`   // End of payroll period
 }
 
 type PayrollPeriodResponse struct {

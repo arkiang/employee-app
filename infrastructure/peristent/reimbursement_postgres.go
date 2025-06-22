@@ -15,11 +15,11 @@ type reimbursementRepository struct {
 }
 
 // Create implements repository.ReimbursementRepository.
-func (r *reimbursementRepository) Create(ctx context.Context, spec entity.Reimbursement) (*entity.Reimbursement, error) {
+func (r *reimbursementRepository) Create(ctx context.Context, spec *entity.Reimbursement) (*entity.Reimbursement, error) {
 	if err := r.db.WithContext(ctx).Create(&spec).Error; err != nil {
 		return nil, err
 	}
-	return &spec, nil
+	return spec, nil
 }
 
 // GetByID implements repository.ReimbursementRepository.
@@ -43,10 +43,10 @@ func (r *reimbursementRepository) List(ctx context.Context, filter model.Employe
 
 	// Filter by period (Start and/or End)
 	if filter.Start != nil {
-		tx = tx.Where("attendance_date >= ?", filter.Start)
+		tx = tx.Where("reimbursement_date >= ?", filter.Start)
 	}
 	if filter.End != nil {
-		tx = tx.Where("attendance_date <= ?", filter.End)
+		tx = tx.Where("reimbursement_date <= ?", filter.End)
 	}
 	
 	tx = tx.Order(fmt.Sprintf("%s %s", filter.Base.GetSortByOrDefault("created_at"), filter.Base.GetSortBySQL()))

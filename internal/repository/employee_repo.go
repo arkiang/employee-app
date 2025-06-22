@@ -9,8 +9,8 @@ import (
 )
 
 type EmployeeRepository interface {
-	CreateTx(ctx context.Context, tx *gorm.DB, spec entity.Employee) error
-	Update(ctx context.Context, spec entity.Employee) (*entity.Employee, error)
+	CreateTx(ctx context.Context, tx *gorm.DB, spec *entity.Employee) error
+	Update(ctx context.Context, spec *entity.Employee) (*entity.Employee, error)
 	GetByID(ctx context.Context, id uint) (*entity.Employee, error)
 	List(ctx context.Context, filter common.CommonFilter) ([]*entity.Employee, error)
 }

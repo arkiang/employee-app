@@ -45,12 +45,12 @@ func (h *OvertimeHandler) SubmitOvertime(c *gin.Context) {
 	}
 
 	// Call usecase
-	if err := h.overtimeUC.SubmitOvertime(c.Request.Context(), empID, req.Date, req.Hours); err != nil {
+	if err := h.overtimeUC.SubmitOvertime(c, empID, req.Date, req.Hours); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.Status(http.StatusCreated)
+	c.JSON(http.StatusOK, gin.H{"message": "overtime submitted successfully"})
 }
 
 // GET /overtime
@@ -79,7 +79,7 @@ func (h *OvertimeHandler) GetOvertimeForPeriod(c *gin.Context) {
 		},
 	}
 
-	overtimes, err := h.overtimeUC.GetOvertimeForPeriod(c.Request.Context(), filter)
+	overtimes, err := h.overtimeUC.GetOvertimeForPeriod(c, filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

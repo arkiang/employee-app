@@ -23,5 +23,6 @@ func GetUserID(c *gin.Context, userType string) (uint, int, string) {
 	}
 
 	userID := userIDVal.(uint)
+
 	return userID, http.StatusOK, ""
 }

@@ -23,11 +23,11 @@ func NewAttendance(db *gorm.DB) repository.AttendanceRepository {
 }
 
 // Create implements repository.AttendanceRepository.
-func (r *attendanceRepository) Create(ctx context.Context, spec entity.Attendance) (*entity.Attendance, error) {
+func (r *attendanceRepository) Create(ctx context.Context, spec *entity.Attendance) (*entity.Attendance, error) {
 	if err := r.db.WithContext(ctx).Create(&spec).Error; err != nil {
 		return nil, err
 	}
-	return &spec, nil
+	return spec, nil
 }
 
 // GetByID implements repository.AttendanceRepository.
@@ -71,9 +71,9 @@ func (r *attendanceRepository) List(ctx context.Context, filter model.EmployeePe
 }
 
 // Update implements repository.AttendanceRepository.
-func (r *attendanceRepository) Update(ctx context.Context, spec entity.Attendance) (*entity.Attendance, error) {
+func (r *attendanceRepository) Update(ctx context.Context, spec *entity.Attendance) (*entity.Attendance, error) {
 	if err := r.db.WithContext(ctx).Save(&spec).Error; err != nil {
 		return nil, err
 	}
-	return &spec, nil
+	return spec, nil
 }

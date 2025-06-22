@@ -25,12 +25,21 @@ func SetupRouter(
 
 	// Public routes
 	public := router.Group("/api")
+	public.GET("/info", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "Welcome to the Employee Management API",
+		})
+	})
+
 	public.POST("/login", userHandler.Login)
-	public.POST("/register", registrationHandler.Register)
+	
 
 	// Auth-protected routes
 	protected := public.Group("/")
 	protected.Use(middleware.AuthMiddleware())
+
+	// Registration
+	protected.POST("/register", registrationHandler.Register)
 
 	// User
 	protected.GET("/users/me", userHandler.GetByID)

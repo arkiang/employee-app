@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"employee-app/configs"
 	persistent "employee-app/infrastructure/peristent"
 	"employee-app/internal/api/handler"
 	http "employee-app/internal/api/v1"
 	"employee-app/internal/migration"
+	"employee-app/internal/seed"
 	"employee-app/internal/usecase/attendance"
 	"employee-app/internal/usecase/employee"
 	"employee-app/internal/usecase/overtime"
@@ -20,7 +22,7 @@ import (
 func main() {
 	err := configs.LoadConfig(".")
 	if err != nil {
-		log.Fatal("Could not load environment variables", err)
+		log.Fatal("Could not load environment variables ", err)
 	}
 
 	db, err := configs.ConnectDB(&configs.AppConfig)
@@ -28,10 +30,10 @@ func main() {
 		log.Fatal("Could not connect to database", err)
 	}
 
-	// ⚙️ AutoMigrate database
+	// AutoMigrate database
 	migration.AutoMigrate(db)
 
-	// 🧱 Repository layer
+	// Repository layer
 	userRepo := persistent.NewUserRepository(db)
 	employeeRepo := persistent.NewEmployee(db)
 	attendanceRepo := persistent.NewAttendance(db)
@@ -40,7 +42,7 @@ func main() {
 	periodRepo := persistent.NewPayrollPeriod(db)
 	payslipRepo := persistent.NewPayslip(db)
 
-	// 💼 Usecase layer
+	// Usecase layer
 	userUsecase := user.New(userRepo, employeeRepo)
 	registrationUsecase := registration.New(userRepo, employeeRepo)
 	employeeUsecase := employee.New(employeeRepo)
@@ -50,7 +52,10 @@ func main() {
 	periodUsecase := payroll.New(periodRepo)
 	payslipUsecase := payslip.New(employeeRepo, attendanceRepo, overtimeRepo, reimbursementRepo, periodRepo, payslipRepo)
 
-	// 🎮 Handler layer
+	seed.SeedAdmin(context.Background(), userRepo)
+	seed.SeedEmployeesFromCSV(context.Background(), registrationUsecase)
+
+	// Handler layer
 	userHandler := handler.NewUserHandler(userUsecase)
 	registrationHandler := handler.NewRegistrationHandler(registrationUsecase)
 	employeeHandler := handler.NewEmployeeHandler(employeeUsecase)

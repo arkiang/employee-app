@@ -12,6 +12,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/shopspring/decimal"
 )
 
 type ReimbursementHandler struct {
@@ -44,18 +45,23 @@ func (h *ReimbursementHandler) SubmitReimbursement(c *gin.Context) {
 		return
 	}
 
+	amount, err := decimal.NewFromString(req.Amount)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid amount"})
+		return
+	}
 	if err := h.reimbursementUC.SubmitReimbursement(
-		c.Request.Context(),
+		c,
 		empID,
 		req.Date,
-		req.Amount,
+		amount,
 		req.Description,
 	); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.Status(http.StatusCreated)
+	c.JSON(http.StatusOK, gin.H{"message": "reimbursement submitted successfully"})
 }
 
 // GET /reimbursements
@@ -84,14 +90,13 @@ func (h *ReimbursementHandler) GetReimbursementsForPeriod(c *gin.Context) {
 		},
 	}
 
-	reimbursements, err := h.reimbursementUC.GetReimbursementsForPeriod(c.Request.Context(), filter)
+	reimbursements, err := h.reimbursementUC.GetReimbursementsForPeriod(c, filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	
-
 	var response []dto.ReimbursementResponse
 	for _, r := range reimbursements {
 		response = append(response, dto.ReimbursementResponse{

@@ -1,14 +1,15 @@
 package dto
 
 import (
+	"employee-app/internal/api/dto/common"
 	"time"
 
 	"github.com/shopspring/decimal"
 )
 
 type SubmitReimbursementRequest struct {
-	Date        time.Time         `json:"date" binding:"required"`             // Reimbursement date (YYYY-MM-DD)
-	Amount      decimal.Decimal   `json:"amount" binding:"required,gt=0"`      // Must be greater than 0
+	Date        common.DateOnly   `json:"date" binding:"required"`             // Reimbursement date (YYYY-MM-DD)
+	Amount      string            `json:"amount" binding:"required,gt=0"`      // Must be greater than 0
 	Description *string           `json:"description,omitempty"`               // Optional description
 }
 

@@ -2,6 +2,7 @@ package payslip
 
 import (
 	"context"
+	"employee-app/internal/common/constant"
 	common "employee-app/internal/common/model"
 	"employee-app/internal/model"
 	"employee-app/internal/model/entity"
@@ -42,10 +43,10 @@ func New(
 }
 
 func (u *payrollUsecase) RunPayroll(ctx context.Context, periodID uint) error {
-	val := ctx.Value("userID")
+	val := ctx.Value(constant.UserId)
 	adminID, ok := val.(uint)
 	if !ok {
-		return errors.New("unauthorized: admin ID not found in context")
+		return errors.New("unauthorized or missing user ID")
 	}
 
 	// 1. Fetch payroll period
@@ -144,7 +145,7 @@ func (u *payrollUsecase) RunPayroll(ctx context.Context, periodID uint) error {
 
 		// ⚙️ Wrap all ops per employee in a DB transaction
 		err := u.payslipRepo.WithTransaction(ctx, func(tx *gorm.DB) error {
-			if err := u.payslipRepo.CreatePayslipTx(ctx, tx, payslip); err != nil {
+			if err := u.payslipRepo.CreatePayslipTx(ctx, tx, &payslip); err != nil {
 				return err
 			}
 			if len(payslipAttendances) > 0 {
