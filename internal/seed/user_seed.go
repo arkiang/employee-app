@@ -1,6 +1,8 @@
 package seed
 
 import (
+	_ "embed"
+
 	"context"
 	"employee-app/internal/model/entity"
 	"employee-app/internal/repository"
@@ -8,7 +10,6 @@ import (
 	"employee-app/pkg/security"
 	"encoding/csv"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/shopspring/decimal"
@@ -54,14 +55,11 @@ func SeedAdmin(ctx context.Context, userRepo repository.UserRepository) {
 	fmt.Println("Admin user seeded successfully.")
 }
 
-func SeedEmployeesFromCSV(ctx context.Context, userRepo repository.UserRepository, regUC registration.RegistrationUsecase) {
-	file, err := os.Open("internal/seed/user.csv")
-	if err != nil {
-		panic(fmt.Sprintf("Failed to open CSV: %v", err))
-	}
-	defer file.Close()
+//go:embed user.csv
+var userCSV string
 
-	reader := csv.NewReader(file)
+func SeedEmployeesFromCSV(ctx context.Context, userRepo repository.UserRepository, regUC registration.RegistrationUsecase) {
+	reader := csv.NewReader(strings.NewReader(userCSV))
 	records, err := reader.ReadAll()
 	if err != nil {
 		panic(fmt.Sprintf("Failed to read CSV: %v", err))
@@ -106,24 +104,4 @@ func SeedEmployeesFromCSV(ctx context.Context, userRepo repository.UserRepositor
 			fmt.Printf("Registered employee '%s'\n", username)
 		}
 	}
-}
-
-func SeedInitialUsers(ctx context.Context, regUC registration.RegistrationUsecase) error {
-	user := entity.User{
-		Username: "user1",
-		Role:     "employee",
-	}
-
-	employee := entity.Employee{
-		Name:   "John Doe",
-		Salary: decimal.NewFromFloat(5000000), // dummy salary
-	}
-	// Seed Employee
-	err := regUC.RegisterEmployee(ctx, user, employee, "12345")
-	if err != nil {
-		return fmt.Errorf("failed to seed employee user: %w", err)
-	}
-
-	fmt.Println("✅ Employee user seeded.")
-	return nil
 }

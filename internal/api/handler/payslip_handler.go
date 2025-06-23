@@ -42,7 +42,7 @@ func (h *PayslipHandler) RunPayroll(c *gin.Context) {
 		return
 	}
 
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, gin.H{"message": "payroll has been run successfully"})
 }
 
 // GET /payslips/:periodId/me

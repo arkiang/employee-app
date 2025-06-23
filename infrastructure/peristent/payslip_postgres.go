@@ -29,7 +29,7 @@ func (r *payslipRepository) GetByEmployeesAndPeriod(ctx context.Context, filter 
 	var payslips []*entity.Payslip
 
 	tx := r.db.WithContext(ctx).Model(&entity.Payslip{}).
-		Preload("Employee").
+		Preload("Employee.User").
 		Preload("Attendances").
 		Preload("Overtimes").
 		Preload("Reimbursements")
