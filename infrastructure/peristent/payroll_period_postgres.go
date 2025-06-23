@@ -22,6 +22,28 @@ func (r *payrollPeriodRepository) Create(ctx context.Context, spec *entity.Payro
 	return spec, nil
 }
 
+func (r *payrollPeriodRepository) MarkProcessedTx(ctx context.Context, tx *gorm.DB, id, userId uint) (*entity.PayrollPeriod, error) {
+	err := tx.WithContext(ctx).
+		Model(&entity.PayrollPeriod{}).
+		Where("id = ?", id).
+		Updates(map[string]interface{}{
+			"processed" : true,
+			"updated_by": userId,
+		}).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	var updated entity.PayrollPeriod
+	if err := r.db.WithContext(ctx).
+		First(&updated, id).Error; err != nil {
+		return nil, err
+	}
+
+	return &updated, nil
+}
+
 // GetByID implements repository.PayrollPeriodRepository.
 func (r *payrollPeriodRepository) GetByID(ctx context.Context, id uint) (*entity.PayrollPeriod, error) {
 	var payrollPeriod entity.PayrollPeriod

@@ -55,16 +55,8 @@ func (u *payrollUsecase) RunPayroll(ctx context.Context, periodID uint) error {
 		return fmt.Errorf("failed to get period: %w", err)
 	}
 
-	// 2. Check if payroll already run
-	existingPayslips, err := u.payslipRepo.ListForPeriod(ctx, model.EmployeePeriodFilter{
-		Start: &period.StartDate,
-		End:   &period.EndDate,
-	})
-	if err != nil {
-		return fmt.Errorf("failed to check existing payslips: %w", err)
-	}
-	if len(existingPayslips) > 0 {
-		return errors.New("payroll has already been processed for this period")
+	if period.Processed {
+		return fmt.Errorf("payroll has already been processed for this period")
 	}
 
 	// 3. Fetch employees
@@ -120,6 +112,11 @@ func (u *payrollUsecase) RunPayroll(ctx context.Context, periodID uint) error {
 			if err != nil {
 				return err
 			}
+
+			_, err = u.payrollPeriodRepo.MarkProcessedTx(ctx, tx, period.ID, adminID)
+			if err != nil {
+				return err
+			}	
 
 			var payslipAttendances []entity.PayslipAttendance
 			for _, a := range attendances {
