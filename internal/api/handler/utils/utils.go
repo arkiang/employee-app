@@ -26,3 +26,11 @@ func GetUserID(c *gin.Context, userType string) (uint, int, string) {
 
 	return userID, http.StatusOK, ""
 }
+
+func CheckAccess(c *gin.Context, userIDFromCtx, userIDFromParam uint ) (uint, int, string) {
+	if userIDFromCtx != userIDFromParam {
+		return 0, http.StatusForbidden, "you are not allowed to access this employee"
+	}
+
+	return userIDFromCtx, http.StatusOK, ""
+}

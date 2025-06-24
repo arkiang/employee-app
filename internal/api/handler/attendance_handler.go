@@ -8,6 +8,7 @@ import (
 	commonFilter "employee-app/internal/common/model"
 	"employee-app/internal/model"
 	"employee-app/internal/usecase/attendance"
+	"employee-app/internal/usecase/employee"
 	"net/http"
 	"strconv"
 
@@ -15,16 +16,17 @@ import (
 )
 
 type AttendanceHandler struct {
-	usecase attendance.AttendanceUsecase
+	usecase        attendance.AttendanceUsecase
+	employeeUsecase employee.EmployeeUsecase
 }
 
-func NewAttendanceHandler(u attendance.AttendanceUsecase) *AttendanceHandler {
-	return &AttendanceHandler{usecase: u}
+func NewAttendanceHandler(u attendance.AttendanceUsecase, e employee.EmployeeUsecase) *AttendanceHandler {
+	return &AttendanceHandler{usecase: u, employeeUsecase: e}
 }
 
 // POST /attendance/{id}/submit
 func (h *AttendanceHandler) SubmitAttendance(c *gin.Context) {
-	_, status, errMsg := utils.GetUserID(c, constant.EnumRoleEmployee)
+	userID, status, errMsg := utils.GetUserID(c, constant.EnumRoleEmployee)
 	if status != http.StatusOK {
 		c.JSON(status, gin.H{"error": errMsg})
 		return
@@ -37,6 +39,18 @@ func (h *AttendanceHandler) SubmitAttendance(c *gin.Context) {
 		return
 	}
 	empID := uint(empIDInt)
+
+	employee, err := h.employeeUsecase.GetEmployeeByID(c, empID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "employee not found"})
+		return
+	}
+
+	_, status, errMsg = utils.CheckAccess(c, userID, employee.UserID)
+	if status != http.StatusOK {
+		c.JSON(status, gin.H{"error": errMsg})
+		return
+	}
 
 	var req dto.SubmitAttendanceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -56,7 +70,7 @@ func (h *AttendanceHandler) SubmitAttendance(c *gin.Context) {
 
 // GET /attendance
 func (h *AttendanceHandler) GetAttendanceForPeriod(c *gin.Context) {
-	_, status, errMsg := utils.GetUserID(c, constant.EnumRoleEmployee)
+		_, status, errMsg := utils.GetUserID(c, constant.EnumRoleEmployee)
 	if status != http.StatusOK {
 		c.JSON(status, gin.H{"error": errMsg})
 		return

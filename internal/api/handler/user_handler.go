@@ -2,6 +2,8 @@ package handler
 
 import (
 	"employee-app/internal/api/dto"
+	"employee-app/internal/api/handler/utils"
+	"employee-app/internal/common/constant"
 	"employee-app/internal/usecase/user"
 	"employee-app/pkg/security"
 	"net/http"
@@ -49,6 +51,12 @@ func (h *UserHandler) Login(c *gin.Context) {
 
 // GetByID returns user info by ID
 func (h *UserHandler) GetByID(c *gin.Context) {
+	userID, status, errMsg := utils.GetUserID(c, constant.EnumRoleEmployee)
+	if status != http.StatusOK {
+		c.JSON(status, gin.H{"error": errMsg})
+		return
+	}
+	
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -59,6 +67,11 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 	user, err := h.usecase.GetByID(c, uint(id))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	if userID != user.ID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "you are not allowed to access this user"})
 		return
 	}
 

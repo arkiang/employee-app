@@ -3,7 +3,8 @@ package handler
 import (
 	"employee-app/internal/api/dto"
 	"employee-app/internal/api/dto/common"
-	"employee-app/internal/api/middleware"
+	"employee-app/internal/api/handler/utils"
+	"employee-app/internal/common/constant"
 	"employee-app/internal/model/entity"
 	"employee-app/internal/usecase/employee"
 	"net/http"
@@ -22,6 +23,12 @@ func NewEmployeeHandler(u employee.EmployeeUsecase) *EmployeeHandler {
 
 // GET /employees
 func (h *EmployeeHandler) ListEmployees(c *gin.Context) {
+	_, status, errMsg := utils.GetUserID(c, constant.EnumRoleAdmin)
+	if status != http.StatusOK {
+		c.JSON(status, gin.H{"error": errMsg})
+		return
+	}
+
 	var queryParams common.CommonQueryParams
 	if err := c.ShouldBindQuery(&queryParams); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -54,14 +61,26 @@ func (h *EmployeeHandler) GetEmployeeByID(c *gin.Context) {
 		return
 	}
 
+	userID, status, errMsg := utils.GetUserID(c, constant.EnumRoleEmployee)
+	if status != http.StatusOK {
+		c.JSON(status, gin.H{"error": errMsg})
+		return
+	}
+
+	_, status, errMsg = utils.CheckAccess(c, userID, employee.UserID)
+	if status != http.StatusOK {
+		c.JSON(status, gin.H{"error": errMsg})
+		return
+	}
+
 	c.JSON(http.StatusOK, employee)
 }
 
 // PUT /employees/:id
 func (h *EmployeeHandler) UpdateEmployee(c *gin.Context) {
-	_, exists := c.Get(middleware.ContextUserIDKey)
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "user ID not found in token"})
+	userID, status, errMsg := utils.GetUserID(c, constant.EnumRoleAdmin)
+	if status != http.StatusOK {
+		c.JSON(status, gin.H{"error": errMsg})
 		return
 	}
 	
@@ -72,6 +91,18 @@ func (h *EmployeeHandler) UpdateEmployee(c *gin.Context) {
 		return
 	}
 
+	employee, err := h.usecase.GetEmployeeByID(c, uint(id))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "employee not found"})
+		return
+	}
+
+	_, status, errMsg = utils.CheckAccess(c, userID, employee.ID)
+	if status != http.StatusOK {
+		c.JSON(status, gin.H{"error": errMsg})
+		return
+	}
+
 	var input dto.UpdateEmployeeRequest
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -79,13 +110,13 @@ func (h *EmployeeHandler) UpdateEmployee(c *gin.Context) {
 		return
 	}
 
-	employee := entity.Employee{
+	updatedEmployee := entity.Employee{
 		ID:     uint(id),
 		Name:   input.Name,
 		Salary: input.Salary,
 	}
 
-	updated, err := h.usecase.UpdateEmployee(c, employee)
+	updated, err := h.usecase.UpdateEmployee(c, updatedEmployee)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update employee"})
 		return

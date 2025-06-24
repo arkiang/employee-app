@@ -14,7 +14,7 @@ type CommonQueryParams struct {
 }
 
 type EmployeePeriodQueryParams struct {
-	EmployeeIDs []string   `form:"employeeId[]"`               // Optional: filter by multiple emp IDs
+	EmployeeIDs []string   `form:"employeeId"`                 // Optional: filter by multiple emp IDs
 	Start       *time.Time `form:"start"`                      // Optional: start date
 	End         *time.Time `form:"end"`                        // Optional: end date
 	SortBy      string     `form:"sortBy"`                     // e.g. "created_at"

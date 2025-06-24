@@ -52,16 +52,17 @@ func main() {
 	periodUsecase := payroll.New(periodRepo)
 	payslipUsecase := payslip.New(employeeRepo, attendanceRepo, overtimeRepo, reimbursementRepo, periodRepo, payslipRepo)
 
-	seed.SeedAdmin(context.Background(), userRepo)
-	seed.SeedEmployeesFromCSV(context.Background(), userRepo, registrationUsecase)
+	// Seed initial data
+	seed.SeedAdmin(context.Background(), userRepo, periodRepo)
+	seed.SeedEmployeesFromCSV(context.Background(), userRepo, employeeRepo, attendanceRepo, overtimeRepo, reimbursementRepo, registrationUsecase)
 
 	// Handler layer
 	userHandler := handler.NewUserHandler(userUsecase)
 	registrationHandler := handler.NewRegistrationHandler(registrationUsecase)
 	employeeHandler := handler.NewEmployeeHandler(employeeUsecase)
-	attendanceHandler := handler.NewAttendanceHandler(attendanceUsecase)
-	overtimeHandler := handler.NewOvertimeHandler(overtimeUsecase)
-	reimbursementHandler := handler.NewReimbursementHandler(reimbursementUsecase)
+	attendanceHandler := handler.NewAttendanceHandler(attendanceUsecase, employeeUsecase)
+	overtimeHandler := handler.NewOvertimeHandler(overtimeUsecase, employeeUsecase)
+	reimbursementHandler := handler.NewReimbursementHandler(reimbursementUsecase, employeeUsecase)
 	periodHandler := handler.NewPayrollPeriodHandler(periodUsecase)
 	payslipHandler := handler.NewPayslipHandler(payslipUsecase)
 

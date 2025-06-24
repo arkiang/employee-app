@@ -1,0 +1,198 @@
+username,date,amount,description
+user1,2025-06-03,143199,Parking
+user2,2025-06-11,139701,Transport
+user2,2025-06-05,145781,Internet
+user2,2025-06-04,60314,Internet
+user3,2025-06-11,57481,Transport
+user3,2025-06-01,280928,Internet
+user4,2025-06-08,283062,Internet
+user4,2025-06-12,105438,Meal
+user5,2025-06-12,184282,Meal
+user5,2025-06-10,114719,Parking
+user5,2025-06-11,255151,Transport
+user6,2025-06-09,183016,Meal
+user7,2025-06-06,130404,Meal
+user8,2025-06-09,198524,Transport
+user8,2025-06-02,111459,Parking
+user9,2025-06-02,153782,Transport
+user9,2025-06-06,103362,Transport
+user9,2025-06-07,298085,Parking
+user10,2025-06-01,233614,Internet
+user10,2025-06-14,118944,Parking
+user10,2025-06-10,226619,Parking
+user11,2025-06-12,56846,Office Supplies
+user12,2025-06-13,152932,Meal
+user12,2025-06-06,85414,Parking
+user13,2025-06-08,258078,Transport
+user13,2025-06-03,164289,Internet
+user14,2025-06-03,141901,Internet
+user14,2025-06-14,141852,Parking
+user15,2025-06-07,134231,Transport
+user16,2025-06-10,286554,Transport
+user16,2025-06-04,134197,Office Supplies
+user17,2025-06-08,164529,Transport
+user17,2025-06-01,122306,Meal
+user17,2025-06-14,80801,Parking
+user18,2025-06-04,66179,Meal
+user19,2025-06-07,240865,Meal
+user19,2025-06-02,91461,Office Supplies
+user20,2025-06-07,283738,Meal
+user21,2025-06-02,257257,Meal
+user21,2025-06-15,203162,Parking
+user22,2025-06-01,189258,Meal
+user22,2025-06-05,122714,Parking
+user23,2025-06-11,144378,Office Supplies
+user24,2025-06-12,180718,Parking
+user25,2025-06-14,246455,Internet
+user26,2025-06-14,93954,Transport
+user27,2025-06-02,164691,Transport
+user27,2025-06-14,242749,Parking
+user27,2025-06-06,106705,Office Supplies
+user28,2025-06-12,291062,Transport
+user29,2025-06-02,183874,Meal
+user29,2025-06-14,292856,Parking
+user29,2025-06-03,234879,Office Supplies
+user30,2025-06-09,141038,Office Supplies
+user30,2025-06-14,188703,Parking
+user30,2025-06-08,211256,Transport
+user31,2025-06-09,276872,Office Supplies
+user31,2025-06-06,73127,Meal
+user31,2025-06-12,172131,Parking
+user32,2025-06-09,180183,Office Supplies
+user33,2025-06-14,246401,Parking
+user33,2025-06-04,75728,Parking
+user33,2025-06-12,230875,Office Supplies
+user34,2025-06-03,228327,Internet
+user35,2025-06-04,68973,Internet
+user35,2025-06-02,78513,Internet
+user35,2025-06-07,181479,Meal
+user36,2025-06-10,133249,Meal
+user36,2025-06-09,94676,Meal
+user37,2025-06-15,199105,Internet
+user38,2025-06-06,153025,Office Supplies
+user39,2025-06-04,236314,Transport
+user39,2025-06-11,209882,Office Supplies
+user39,2025-06-07,96624,Office Supplies
+user40,2025-06-06,77904,Internet
+user41,2025-06-13,136533,Office Supplies
+user41,2025-06-04,62304,Office Supplies
+user41,2025-06-15,199292,Parking
+user42,2025-06-12,63109,Internet
+user42,2025-06-11,145358,Transport
+user43,2025-06-09,290204,Parking
+user43,2025-06-04,245030,Office Supplies
+user44,2025-06-03,162037,Meal
+user44,2025-06-06,60471,Meal
+user45,2025-06-05,244732,Internet
+user45,2025-06-01,105069,Internet
+user45,2025-06-14,205797,Meal
+user46,2025-06-14,264826,Transport
+user47,2025-06-03,208366,Parking
+user47,2025-06-15,126314,Transport
+user48,2025-06-14,76119,Parking
+user49,2025-06-13,269073,Parking
+user49,2025-06-15,222495,Transport
+user49,2025-06-13,127337,Meal
+user50,2025-06-15,200211,Office Supplies
+user50,2025-06-05,79175,Internet
+user51,2025-06-03,53011,Meal
+user51,2025-06-08,58690,Meal
+user51,2025-06-15,93147,Transport
+user52,2025-06-07,259301,Parking
+user52,2025-06-01,180362,Parking
+user53,2025-06-07,105708,Meal
+user53,2025-06-03,226518,Parking
+user54,2025-06-12,287545,Internet
+user54,2025-06-01,270390,Meal
+user55,2025-06-05,92546,Parking
+user55,2025-06-07,162655,Transport
+user56,2025-06-03,127866,Internet
+user57,2025-06-12,190444,Internet
+user57,2025-06-09,224679,Internet
+user57,2025-06-03,285625,Transport
+user58,2025-06-07,166495,Internet
+user58,2025-06-04,214122,Transport
+user59,2025-06-02,131975,Internet
+user59,2025-06-07,158401,Office Supplies
+user59,2025-06-06,209653,Office Supplies
+user60,2025-06-13,266184,Meal
+user61,2025-06-10,148042,Parking
+user61,2025-06-04,147143,Office Supplies
+user61,2025-06-15,286490,Transport
+user62,2025-06-06,238390,Office Supplies
+user62,2025-06-09,264629,Meal
+user63,2025-06-01,268698,Meal
+user64,2025-06-04,52233,Meal
+user64,2025-06-12,156898,Office Supplies
+user64,2025-06-03,73457,Transport
+user65,2025-06-08,140201,Office Supplies
+user65,2025-06-02,115503,Transport
+user66,2025-06-02,269762,Office Supplies
+user66,2025-06-09,146643,Parking
+user67,2025-06-10,249977,Parking
+user68,2025-06-12,271986,Office Supplies
+user69,2025-06-14,170796,Internet
+user69,2025-06-11,226015,Transport
+user69,2025-06-15,194773,Parking
+user70,2025-06-01,94590,Office Supplies
+user70,2025-06-11,173861,Meal
+user71,2025-06-11,203410,Internet
+user72,2025-06-13,221953,Parking
+user72,2025-06-05,113211,Internet
+user72,2025-06-11,202002,Transport
+user73,2025-06-11,210797,Office Supplies
+user73,2025-06-10,54651,Transport
+user74,2025-06-14,132852,Parking
+user75,2025-06-13,280149,Transport
+user75,2025-06-05,191088,Meal
+user75,2025-06-08,274613,Meal
+user76,2025-06-12,288469,Internet
+user77,2025-06-03,70889,Transport
+user77,2025-06-01,144388,Meal
+user78,2025-06-12,194475,Parking
+user78,2025-06-09,163020,Parking
+user78,2025-06-04,106482,Meal
+user79,2025-06-05,129371,Internet
+user79,2025-06-10,122088,Internet
+user80,2025-06-14,231915,Internet
+user80,2025-06-06,273829,Meal
+user80,2025-06-14,142473,Parking
+user81,2025-06-02,242309,Meal
+user81,2025-06-01,179017,Transport
+user82,2025-06-15,188944,Internet
+user82,2025-06-01,231579,Office Supplies
+user83,2025-06-06,287414,Transport
+user83,2025-06-09,83523,Internet
+user84,2025-06-06,82385,Internet
+user84,2025-06-01,74028,Transport
+user85,2025-06-09,150323,Office Supplies
+user86,2025-06-12,241974,Internet
+user87,2025-06-12,173498,Transport
+user88,2025-06-02,210314,Office Supplies
+user88,2025-06-01,151084,Parking
+user88,2025-06-14,290097,Internet
+user89,2025-06-07,227522,Meal
+user89,2025-06-14,262273,Internet
+user90,2025-06-04,153839,Office Supplies
+user90,2025-06-11,127577,Parking
+user90,2025-06-12,239035,Transport
+user91,2025-06-10,136970,Meal
+user91,2025-06-11,241684,Internet
+user92,2025-06-06,119587,Transport
+user93,2025-06-07,290263,Meal
+user93,2025-06-12,229607,Parking
+user93,2025-06-15,59641,Office Supplies
+user94,2025-06-06,208801,Parking
+user94,2025-06-03,144826,Parking
+user95,2025-06-07,221666,Parking
+user95,2025-06-12,196726,Internet
+user95,2025-06-02,182759,Office Supplies
+user96,2025-06-12,162235,Parking
+user97,2025-06-11,198242,Parking
+user97,2025-06-02,180814,Meal
+user97,2025-06-07,175643,Office Supplies
+user98,2025-06-09,290502,Office Supplies
+user99,2025-06-05,241439,Internet
+user99,2025-06-12,152656,Office Supplies
+user100,2025-06-15,233596,Office Supplies
+user100,2025-06-12,69510,Internet

@@ -7,6 +7,7 @@ import (
 	"employee-app/internal/common/constant"
 	commonFilter "employee-app/internal/common/model"
 	"employee-app/internal/model"
+	"employee-app/internal/usecase/employee"
 	"employee-app/internal/usecase/reimbursement"
 	"net/http"
 	"strconv"
@@ -17,15 +18,16 @@ import (
 
 type ReimbursementHandler struct {
 	reimbursementUC reimbursement.ReimbursementUsecase
+	employeeUsecase  employee.EmployeeUsecase
 }
 
-func NewReimbursementHandler(reimbursementUC reimbursement.ReimbursementUsecase) *ReimbursementHandler {
-	return &ReimbursementHandler{reimbursementUC: reimbursementUC}
+func NewReimbursementHandler(reimbursementUC reimbursement.ReimbursementUsecase, employeeUsecase employee.EmployeeUsecase) *ReimbursementHandler {
+	return &ReimbursementHandler{reimbursementUC: reimbursementUC, employeeUsecase: employeeUsecase}
 }
 
 // POST /reimbursements
 func (h *ReimbursementHandler) SubmitReimbursement(c *gin.Context) {
-	_, status, errMsg := utils.GetUserID(c, constant.EnumRoleEmployee)
+	userID, status, errMsg := utils.GetUserID(c, constant.EnumRoleEmployee)
 	if status != http.StatusOK {
 		c.JSON(status, gin.H{"error": errMsg})
 		return
@@ -38,6 +40,18 @@ func (h *ReimbursementHandler) SubmitReimbursement(c *gin.Context) {
 		return
 	}
 	empID := uint(empIDInt)
+
+	employee, err := h.employeeUsecase.GetEmployeeByID(c, empID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "employee not found"})
+		return
+	}
+
+	_, status, errMsg = utils.CheckAccess(c, userID, employee.UserID)
+	if status != http.StatusOK {
+		c.JSON(status, gin.H{"error": errMsg})
+		return
+	}
 
 	var req dto.SubmitReimbursementRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
